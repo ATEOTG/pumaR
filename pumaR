@@ -1,0 +1,19 @@
+library(sf)
+library(nycgeo)
+library(ggplot2)
+library(readr)
+library(tidyverse)
+
+rh_puma_map_data <- read_csv("datafiles/rh_puma_map_data.csv") %>% #loads data in variable
+  select(qpuma, incarceration) #takes columns qpuma and incarceration
+
+rh_puma_map_data$qpuma <- as.character(rh_puma_map_data$qpuma) #takes column and
+                                                              #converts to char data
+
+nyc_boundaries(geography = "puma") %>% 
+  left_join(rh_puma_map_data, by = c("puma_id" = "qpuma")) %>%
+  ggplot() + 
+  geom_sf( aes(fill = incarceration)) +
+  scale_fill_viridis_c( name = "Incarceration Rates", option = "plasma") +
+  theme_void() +
+  labs(title = "Which Neighborhoods has the Most Incaceration Rates?")
